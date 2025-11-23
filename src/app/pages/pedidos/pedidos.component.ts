@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ModalComponent } from '../../shared/components/modal/modal.component';
 import { DataTableComponent } from '../../shared/components/data-table/data-table.component';
 import { PedidosService } from '../../services/pedidos/pedidos.service';
+import { ProductosService } from '../../services/productos/productos.service';
 
 @Component({
   selector: 'app-pedidos',
@@ -20,11 +21,12 @@ import { PedidosService } from '../../services/pedidos/pedidos.service';
 export class PedidosComponent {
 
   pedidos: any[] = [];
+  productos: any[] = [];   // <<< productos para dropdown
   mostrarModal = false;
 
   nuevo = {
     clienteID: '',
-    detallesJSON: ''
+    detalles: [] as { productoID: number; cantidad: number }[]
   };
 
   columnas = [
@@ -34,22 +36,35 @@ export class PedidosComponent {
     { key: 'total', label: 'Total' }
   ];
 
-  constructor(private pedidosService: PedidosService) {}
+  constructor(
+    private pedidosService: PedidosService,
+    private productosService: ProductosService
+  ) {}
 
   ngOnInit(): void {
     this.cargarPedidos();
+    this.cargarProductos();
   }
 
   cargarPedidos() {
     this.pedidosService.obtenerPedidos().subscribe({
-      next: (resp) => {
-        this.pedidos = resp;
-      },
+      next: (resp) => this.pedidos = resp,
+      error: (err) => console.error(err)
+    });
+  }
+
+  cargarProductos() {
+    this.productosService.obtenerProductos().subscribe({
+      next: (resp) => this.productos = resp,
       error: (err) => console.error(err)
     });
   }
 
   abrirModal() {
+    this.nuevo = {
+      clienteID: '',
+      detalles: []   // Reinicia detalles
+    };
     this.mostrarModal = true;
   }
 
@@ -57,20 +72,30 @@ export class PedidosComponent {
     this.mostrarModal = false;
   }
 
+  agregarDetalle() {
+    this.nuevo.detalles.push({
+      productoID: 0,
+      cantidad: 1
+    });
+  }
+
+  eliminarDetalle(index: number) {
+    this.nuevo.detalles.splice(index, 1);
+  }
+
   registrarPedido() {
     const payload = {
       ClienteID: Number(this.nuevo.clienteID),
-      DetallesJSON: this.nuevo.detallesJSON
+      DetallesJSON: JSON.stringify(this.nuevo.detalles)
     };
 
     this.pedidosService.registrarPedido(payload).subscribe({
-      next: (resp) => {
+      next: () => {
         alert('Pedido registrado con éxito');
         this.cerrarModal();
         this.cargarPedidos();
-        this.nuevo = { clienteID: '', detallesJSON: '' };
       },
-      error: (err) => alert('Error: ' + err.error.error)
+      error: (err) => alert('Error: ' + err.error?.error)
     });
   }
 }
