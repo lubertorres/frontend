@@ -1,47 +1,52 @@
 <div class="bg-white shadow rounded overflow-hidden">
 
-    <table class="w-full">
+    <!-- 🔥 Contenedor con scroll X y Y -->
+    <div class="overflow-x-auto overflow-y-auto max-h-[450px]">
 
-        <thead class="bg-gray-200">
-            <tr>
-                <th *ngFor="let col of columns" class="p-3 text-left font-semibold">
-                    {{ col.label }}
-                </th>
-                <th class="p-3 text-left font-semibold">Acciones</th>
-            </tr>
-        </thead>
+        <table class="w-full min-w-max">
 
-        <tbody>
-            <tr *ngIf="isLoading">
-                <td [attr.colspan]="columns.length" class="p-4 text-center">
-                    Cargando...
-                </td>
-            </tr>
+            <thead class="bg-gray-200 sticky top-0 z-10">
+                <tr>
+                    <th *ngFor="let col of columns" class="p-3 text-left font-semibold whitespace-nowrap">
+                        {{ col.label }}
+                    </th>
+                    <th class="p-3 text-left font-semibold whitespace-nowrap">Acciones</th>
+                </tr>
+            </thead>
 
-            <tr *ngFor="let row of data" class="border-b hover:bg-gray-50">
-                <td *ngFor="let col of columns" class="p-3">
-                    {{ row[col.key] }}
-                </td>
+            <tbody>
+                <tr *ngIf="isLoading">
+                    <td [attr.colspan]="columns.length + 1" class="p-4 text-center">
+                        Cargando...
+                    </td>
+                </tr>
 
-                <td class="p-3 flex gap-2">
+                <tr *ngFor="let row of data" class="border-b hover:bg-gray-50">
+                    <td *ngFor="let col of columns" class="p-3 whitespace-nowrap">
+                        {{ row[col.key] }}
+                    </td>
 
-                    <button (click)="editar(row)"
-                        class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600">
-                        Editar
-                    </button>
+                    <td class="p-3 flex gap-2 whitespace-nowrap">
+                        <button (click)="editar(row)"
+                                class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600">
+                                Editar
+                        </button>
 
-                    <button (click)="eliminar(row)" class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700">
-                        Eliminar
-                    </button>
+                        <button (click)="eliminar(row)"
+                                class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700">
+                                Eliminar
+                        </button>
 
-                    <button *ngIf="showEstadoButton" (click)="cambiarEstado(row)"
-                        class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">
-                        Estado
-                    </button>
-                </td>
-            </tr>
-        </tbody>
+                        <button *ngIf="showEstadoButton" (click)="cambiarEstado(row)"
+                                class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">
+                                Estado
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
 
-    </table>
+        </table>
+
+    </div>
 
 </div>

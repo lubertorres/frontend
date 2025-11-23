@@ -23,6 +23,14 @@ export class PedidosComponent {
 
   esSoloLectura = false;
 
+  filtros = {
+    estado: '',
+    fechaDesde: '',
+    fechaHasta: '',
+    identificacionCliente: '',
+    cliente: ''
+  };
+
   columnas = [
     { key: 'pedidoID', label: 'ID Pedido' },
     { key: 'clienteNombres', label: 'Cliente' },
@@ -214,4 +222,23 @@ export class PedidosComponent {
       }
     });
   }
+
+  buscarPedidos() {
+    this.pedidosService.filtrarPedidos(this.filtros).subscribe({
+      next: resp => this.pedidos = resp.data,
+      error: err => console.error(err)
+    });
+  }
+
+  limpiarFiltros() {
+    this.filtros = {
+      estado: '',
+      fechaDesde: '',
+      fechaHasta: '',
+      identificacionCliente: '',
+      cliente: ''
+    };
+    this.cargarPedidos();
+  }
+
 }

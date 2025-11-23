@@ -1,3 +1,49 @@
+<!-- FILTROS -->
+<div class="bg-white p-4 shadow rounded mb-4 grid grid-cols-12 gap-4">
+
+    <!-- Estado -->
+    <div class="col-span-3">
+        <label class="block text-sm font-semibold">Estado</label>
+        <select [(ngModel)]="filtros.estado" class="w-full border p-2 rounded">
+            <option value="">Todos</option>
+            <option value="PENDIENTE">Pendiente</option>
+            <option value="COMPLETADO">Completado</option>
+            <option value="CANCELADO">Cancelado</option>
+        </select>
+    </div>
+
+    <!-- Identificación -->
+    <div class="col-span-3">
+        <label class="block text-sm font-semibold">Identificación Cliente</label>
+        <input type="text" [(ngModel)]="filtros.identificacionCliente" class="w-full border p-2 rounded"
+            placeholder="Ej: 093..." />
+    </div>
+
+    <!-- Fecha desde -->
+    <div class="col-span-3">
+        <label class="block text-sm font-semibold">Fecha Desde</label>
+        <input type="date" [(ngModel)]="filtros.fechaDesde" class="w-full border p-2 rounded" />
+    </div>
+
+    <!-- Fecha hasta -->
+    <div class="col-span-3">
+        <label class="block text-sm font-semibold">Fecha Hasta</label>
+        <input type="date" [(ngModel)]="filtros.fechaHasta" class="w-full border p-2 rounded" />
+    </div>
+
+    <!-- Botones -->
+    <div class="col-span-12 flex justify-end gap-2 mt-2">
+        <button class="px-4 py-2 bg-gray-300 rounded" (click)="limpiarFiltros()">
+            Limpiar
+        </button>
+        <button class="px-4 py-2 bg-blue-600 text-white rounded" (click)="buscarPedidos()">
+            Buscar
+        </button>
+    </div>
+
+</div>
+
+
 <div class="flex justify-between items-center mb-4">
     <h2 class="text-2xl font-bold">Pedidos</h2>
 

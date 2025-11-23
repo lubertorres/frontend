@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 
 export interface PedidoDetalle {
@@ -55,5 +55,20 @@ export class PedidosService {
     return this.http.put(`http://localhost:8000/api/pedidos/estado/${pedidoID}`, {
       estado
     });
+  }
+
+  filtrarPedidos(filtros: any): Observable<{ ok: boolean; data: any[] }> {
+    let params = new HttpParams();
+
+    Object.entries(filtros).forEach(([key, value]) => {
+      if (value !== null && value !== undefined && value !== '') {
+        params = params.set(key, String(value));
+      }
+    });
+
+    return this.http.get<{ ok: boolean; data: any[] }>(
+      `${this.apiListar}/filtrar`,
+      { params }
+    );
   }
 }
