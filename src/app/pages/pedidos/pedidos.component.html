@@ -1,77 +1,121 @@
 <div class="flex justify-between items-center mb-4">
-  <h2 class="text-2xl font-bold">Pedidos</h2>
+    <h2 class="text-2xl font-bold">Pedidos</h2>
 
-  <button type="button" (click)="abrirModal()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-    + Registrar Pedido
-  </button>
+    <button type="button" (click)="abrirModal()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+        + Registrar Pedido
+    </button>
 </div>
 
 <data-table [data]="pedidos" [columns]="columnas">
-  <ng-template let-pedido>
-    <button (click)="verDetalle(pedido)" class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 mr-2">Ver Detalle</button>
-    <button (click)="editarPedido(pedido)" class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 mr-2">Editar</button>
-    <button (click)="eliminarPedido(pedido.pedidoID)" class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700">Eliminar</button>
-  </ng-template>
+    <ng-template let-pedido>
+        <button (click)="verDetalle(pedido)" class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 mr-2">
+            Ver Detalle
+        </button>
+
+        <button (click)="editarPedido(pedido)"
+            class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 mr-2">
+            Editar
+        </button>
+
+        <button (click)="eliminarPedido(pedido.pedidoID)"
+            class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700">
+            Eliminar
+        </button>
+    </ng-template>
 </data-table>
 
+<!-- MODAL -->
 <app-modal [visible]="mostrarModal" title="Pedido" (close)="cerrarModal()">
-  <!-- Formulario registro -->
-  <form *ngIf="nuevo.detalles?.length === 0 || nuevo.detalles[0]?.productoID === ''"
-        class="space-y-4" (ngSubmit)="registrarPedido()">
-    <div>
-      <label class="block mb-1 font-medium">Cliente</label>
-      <input type="text" class="w-full border p-2 rounded"
-             [(ngModel)]="nuevo.clienteIdentificacion" name="clienteID" required>
-    </div>
 
-    <div class="mt-4">
-      <div class="flex justify-between items-center mb-2">
-        <h3 class="font-semibold">Detalles del Pedido</h3>
-        <button type="button" class="px-3 py-1 bg-blue-600 text-white rounded" (click)="agregarDetalle()">+ Agregar Detalle</button>
-      </div>
+    <!-- REGISTRO -->
+    <form *ngIf="!esSoloLectura" class="space-y-4" (ngSubmit)="registrarPedido()">
 
-      <div class="border rounded p-3 bg-gray-50">
-        <div *ngFor="let d of nuevo.detalles; let i = index" class="grid grid-cols-12 gap-2 mb-2 items-center">
-          <select class="col-span-6 border p-2 rounded" [(ngModel)]="d.productoID" name="productoID_{{i}}" required>
-            <option value="">Seleccione un producto</option>
-            <option *ngFor="let p of productos" [value]="p.productoID">{{ p.nombre }}</option>
-          </select>
-
-          <input type="number" class="col-span-4 border p-2 rounded" min="1" [(ngModel)]="d.cantidad" name="cantidad_{{i}}" required>
-
-          <button type="button" class="col-span-2 text-red-600" (click)="eliminarDetalle(i)">✕</button>
+        <div>
+            <label class="block mb-1 font-medium">Cliente</label>
+            <input type="text" class="w-full border p-2 rounded" [(ngModel)]="nuevo.clienteIdentificacion"
+                name="clienteIdentificacion" required>
         </div>
 
-        <p *ngIf="nuevo.detalles.length === 0" class="text-gray-500 text-sm">No hay detalles. Agrega uno para comenzar.</p>
-      </div>
+        <!-- DETALLES -->
+        <div>
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="font-semibold">Detalles del Pedido</h3>
+
+                <button type="button" class="px-3 py-1 bg-blue-600 text-white rounded" (click)="agregarDetalle()">
+                    + Agregar Detalle
+                </button>
+            </div>
+
+            <div class="border rounded p-3 bg-gray-50">
+
+                <div *ngFor="let d of nuevo.detalles; let i = index; trackBy: trackByIndex"
+                    class="grid grid-cols-12 gap-2 mb-2 items-center">
+
+                    <!-- PRODUCTO -->
+                    <select class="col-span-6 border p-2 rounded w-full" [(ngModel)]="d.productoID"
+                        name="productoID_{{ i }}" required>
+
+                        <option value="">Seleccione un producto</option>
+
+                        <option *ngFor="let p of productos" [value]="p.productoID">
+                            {{ p.nombre }}
+                        </option>
+                    </select>
+
+                    <!-- CANTIDAD -->
+                    <input type="number" class="col-span-4 border p-2 rounded" min="1" [(ngModel)]="d.cantidad"
+                        name="cantidad_{{ i }}" required>
+
+                    <!-- ELIMINAR -->
+                    <button type="button" class="col-span-2 text-red-600" (click)="eliminarDetalle(i)">
+                        ✕
+                    </button>
+                </div>
+
+                <p *ngIf="nuevo.detalles.length === 0" class="text-gray-500 text-sm">
+                    No hay detalles. Agrega uno para comenzar.
+                </p>
+
+            </div>
+        </div>
+
+        <!-- BOTONES -->
+        <div class="flex justify-end space-x-2 mt-4">
+            <button type="button" (click)="cerrarModal()" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
+                Cancelar
+            </button>
+
+            <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+                Guardar
+            </button>
+        </div>
+
+    </form>
+
+    <!-- LECTURA -->
+    <div *ngIf="esSoloLectura">
+        <p><strong>Cliente:</strong>
+            {{ nuevo.clienteNombres }} {{ nuevo.clienteApellidos }}
+        </p>
+
+        <table class="w-full text-sm border mt-2">
+            <thead>
+                <tr class="bg-gray-100">
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Precio Unitario</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let d of nuevo.detalles">
+                    <td>{{ d.productoNombre }}</td>
+                    <td>{{ d.cantidad }}</td>
+                    <td>{{ d.precioUnitario | currency }}</td>
+                    <td>{{ d.subtotal | currency }}</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 
-    <div class="flex justify-end space-x-2 mt-4">
-      <button type="button" (click)="cerrarModal()" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Cancelar</button>
-      <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Guardar</button>
-    </div>
-  </form>
-
-  <!-- Modal solo para ver detalle de pedido existente -->
-  <div *ngIf="nuevo.detalles?.length && nuevo.detalles[0]?.productoNombre">
-    <p><strong>Cliente:</strong> {{ nuevo.clienteNombres }} {{ nuevo.clienteApellidos }}</p>
-    <table class="w-full text-sm border mt-1">
-      <thead>
-        <tr class="bg-gray-100">
-          <th>Producto</th>
-          <th>Cantidad</th>
-          <th>Precio Unitario</th>
-          <th>Subtotal</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let d of nuevo.detalles">
-          <td>{{ d.productoNombre }}</td>
-          <td>{{ d.cantidad }}</td>
-          <td>{{ d.precioUnitario | currency }}</td>
-          <td>{{ d.subtotal | currency }}</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
 </app-modal>

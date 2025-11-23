@@ -19,11 +19,10 @@ export class PedidosComponent {
   productos: { productoID: string; nombre: string }[] = [];
   mostrarModal = false;
 
-  // objeto usado para registrar o ver detalle
-  nuevo: Pedido = {
-    clienteIdentificacion: '',
-    detalles: []
-  };
+  // Estado del formulario
+  nuevo: Pedido = this.crearPedidoVacio();
+
+  esSoloLectura = false;
 
   columnas = [
     { key: 'pedidoID', label: 'ID Pedido' },
@@ -42,6 +41,31 @@ export class PedidosComponent {
     this.cargarProductos();
   }
 
+  // ---------------------------------------
+  // CREADORES
+  // ---------------------------------------
+
+  private crearPedidoVacio(): Pedido {
+    return {
+      clienteIdentificacion: '',
+      detalles: []
+    };
+  }
+
+  private crearDetalleVacio(): PedidoDetalle {
+    return {
+      productoID: '',
+      cantidad: 1,
+      productoNombre: '',
+      precioUnitario: 0,
+      subtotal: 0
+    };
+  }
+
+  // ---------------------------------------
+  // CARGA DE DATOS
+  // ---------------------------------------
+
   cargarPedidos() {
     this.pedidosService.obtenerPedidos().subscribe({
       next: (resp: Pedido[]) => this.pedidos = resp,
@@ -51,22 +75,34 @@ export class PedidosComponent {
 
   cargarProductos() {
     this.productosService.obtenerProductos().subscribe({
-      next: (resp: any) => this.productos = resp.data,
+      next: (resp: any) => {
+        this.productos = resp.data.map((p: any) => ({
+          ...p,
+          productoID: String(p.productoID)  // 🔥 aseguramos STRING
+        }));
+      },
       error: (err: any) => console.error(err)
     });
   }
 
-  // Abrir modal para registrar pedido
+  // ---------------------------------------
+  // MODAL
+  // ---------------------------------------
+
   abrirModal() {
-    this.nuevo = {
-      clienteIdentificacion: '',
-      detalles: []
-    };
+    this.esSoloLectura = false;
+
+    // Asegurar que productos estén cargados antes del modal
+    if (!this.productos.length) {
+      this.cargarProductos();
+    }
+
+    this.nuevo = this.crearPedidoVacio();
     this.mostrarModal = true;
   }
 
-  // Abrir modal para ver detalle de un pedido existente
   verDetalle(pedido: Pedido) {
+    this.esSoloLectura = true;
     this.nuevo = { ...pedido };
     this.mostrarModal = true;
   }
@@ -75,22 +111,31 @@ export class PedidosComponent {
     this.mostrarModal = false;
   }
 
+  // ---------------------------------------
+  // DETALLES
+  // ---------------------------------------
+
   agregarDetalle() {
-    this.nuevo.detalles.push({
-      productoID: '',
-      cantidad: 1
-    } as PedidoDetalle);
+    this.nuevo.detalles.push(this.crearDetalleVacio());
   }
 
   eliminarDetalle(index: number) {
     this.nuevo.detalles.splice(index, 1);
   }
 
+  trackByIndex(index: number) {
+    return index;
+  }
+
+  // ---------------------------------------
+  // REGISTRAR PEDIDO
+  // ---------------------------------------
+
   registrarPedido() {
     const payload = {
       identificacion: this.nuevo.clienteIdentificacion,
       detalles: this.nuevo.detalles.map(d => ({
-        productoID: d.productoID,
+        productoID: String(d.productoID),
         cantidad: d.cantidad
       }))
     };
@@ -105,7 +150,6 @@ export class PedidosComponent {
     });
   }
 
-  // placeholders para editar/eliminar si quieres implementarlos
   editarPedido(pedido: Pedido) {
     alert('Función editar no implementada aún');
   }

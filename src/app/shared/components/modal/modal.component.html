@@ -1,8 +1,10 @@
 <div
   *ngIf="visible"
-  class="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+  class="fixed inset-0 flex items-center justify-center bg-black/50 z-50 pointer-events-none">
 
-  <div class="bg-white rounded shadow p-6" [style.width]="width">
+  <div 
+    class="bg-white rounded shadow p-6 relative z-[60] pointer-events-auto"
+    [style.width]="width">
 
     <div class="flex justify-between items-center mb-4">
       <h2 class="text-xl font-bold">{{ title }}</h2>

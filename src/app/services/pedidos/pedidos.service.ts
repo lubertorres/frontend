@@ -29,8 +29,8 @@ export interface Pedido {
 })
 export class PedidosService {
 
-  private apiRegistrar = 'http://localhost:8000/api/pedidos';
-  private apiListar = 'http://localhost:8000/api/pedidos/completo';
+  private apiRegistrar = 'http://localhost:8000/api/pedidos/completo';
+  private apiListar = 'http://localhost:8000/api/pedidos';
 
   constructor(private http: HttpClient) {}
 

@@ -1,12 +1,12 @@
 export interface PedidoDetalle {
-  productoID: number;
+  productoID: string;
   cantidad: number;
   precioUnitario?: number;
   subtotal?: number;
 }
 
 export interface Pedido {
-  pedidoID: number;
+  pedidoID: string;
   clienteFK: number;
   fechaPedido: string;
   total: number;
