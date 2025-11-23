@@ -13,16 +13,10 @@ export class DataTableComponent {
   @Input() data: any[] = [];
 
   @Input() isLoading: boolean = false;
-  @Output() onDelete = new EventEmitter<number>();
+  @Output() onDelete = new EventEmitter<any>();
   @Output() onEdit = new EventEmitter<any>();
 
-  eliminar(id: number) {
-    this.onDelete.emit(id);
-    console.log('Eliminar ID:', id);
-  }
-
-  editar(row: any) {
-    this.onEdit.emit(row);
-  }
+  editar(row: any) { this.onEdit.emit(row); }
+  eliminar(row: any) { this.onDelete.emit(row); }
 
 }

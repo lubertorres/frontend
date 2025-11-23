@@ -99,10 +99,10 @@ export class ClientesComponent implements OnInit {
     });
   }
 
-  eliminarCliente(id: number) {
+  eliminarCliente(row: any) {
     if (!confirm('¿Seguro que deseas eliminar este cliente?')) return;
 
-    this.clientesService.eliminarCliente(id).subscribe({
+    this.clientesService.eliminarCliente(row.id).subscribe({
       next: (resp: any) => {
         alert(resp.mensaje);
         this.obtenerClientes();

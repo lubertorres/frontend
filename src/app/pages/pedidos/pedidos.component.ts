@@ -34,7 +34,7 @@ export class PedidosComponent {
   constructor(
     private pedidosService: PedidosService,
     private productosService: ProductosService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.cargarPedidos();
@@ -54,7 +54,7 @@ export class PedidosComponent {
 
   private crearDetalleVacio(): PedidoDetalle {
     return {
-      productoID: '',
+      productoID: 0,
       cantidad: 1,
       productoNombre: '',
       precioUnitario: 0,
@@ -150,11 +150,65 @@ export class PedidosComponent {
     });
   }
 
-  editarPedido(pedido: Pedido) {
-    alert('Función editar no implementada aún');
+  editarPedido(pedido: any) {
+    console.log("🔥 EDITAR EJECUTADO:", pedido);
+
+    this.esSoloLectura = false;
+    this.mostrarModal = true;
+
+    this.nuevo = {
+      pedidoID: Number(pedido.pedidoID),
+      clienteID: Number(pedido.clienteID),
+      clienteIdentificacion: pedido.clienteIdentificacion,
+      clienteNombres: pedido.clienteNombres,
+      clienteApellidos: pedido.clienteApellidos,
+      detalles: pedido.detalles.map((d: any) => ({
+        detallePedidoID: Number(d.detallePedidoID),
+        productoID: Number(d.productoID),   // 🔥 FIX
+        cantidad: Number(d.cantidad),       // 🔥 FIX
+        precioUnitario: Number(d.precioUnitario),
+        subtotal: Number(d.subtotal)
+      }))
+    };
   }
 
-  eliminarPedido(id?: string) {
-    alert('Función eliminar no implementada aún');
+  eliminarPedido(row: any) {
+    const id = row.pedidoID;
+
+    console.log("ID enviado al backend:", id);
+
+    this.pedidosService.eliminarPedido(id).subscribe({
+      next: () => {
+        alert("Pedido eliminado");
+        this.cargarPedidos();
+      },
+      error: err => console.error(err)
+    });
   }
+
+  guardarPedido() {
+    const payload = {
+      detalles: this.nuevo.detalles.map(d => ({
+        productoID: Number(d.productoID),
+        cantidad: d.cantidad
+      }))
+    };
+
+    // SI NO HAY pedidoID → ES NUEVO
+    if (!this.nuevo.pedidoID) {
+      this.registrarPedido();
+      return;
+    }
+
+    // SI HAY pedidoID → EDITAR
+    this.pedidosService.editarPedido(this.nuevo.pedidoID, payload).subscribe({
+      next: () => {
+        alert('Pedido actualizado correctamente');
+        this.cerrarModal();
+        this.cargarPedidos();
+      },
+      error: err => alert('Error actualizando: ' + err.error?.error)
+    });
+  }
+
 }
