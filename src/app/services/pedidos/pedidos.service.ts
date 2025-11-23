@@ -1,11 +1,10 @@
-// src/app/services/pedidos/pedidos.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 
 export interface PedidoDetalle {
   detallePedidoID?: number;
-  productoID: number;          // ← DEBE SER number, NO string
+  productoID: number;
   productoNombre?: string;
   cantidad: number;
   precioUnitario?: number;

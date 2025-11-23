@@ -6,14 +6,11 @@
     </button>
 </div>
 
-<!-- AHORA USAMOS LOS OUTPUTS DEL DATA-TABLE -->
 <data-table [data]="pedidos" [columns]="columnas" (onEdit)="editarPedido($event)" (onDelete)="eliminarPedido($event)">
 </data-table>
 
-<!-- MODAL -->
 <app-modal [visible]="mostrarModal" title="Pedido" (close)="cerrarModal()">
 
-    <!-- REGISTRO -->
     <form *ngIf="!esSoloLectura" class="space-y-4" (ngSubmit)="guardarPedido()">
 
         <div>
@@ -22,7 +19,6 @@
                 name="clienteIdentificacion" required>
         </div>
 
-        <!-- DETALLES -->
         <div>
 
             <div class="flex justify-between items-center mb-2">
@@ -46,11 +42,9 @@
                     </option>
                 </select>
 
-                <!-- CANTIDAD -->
                 <input type="number" class="col-span-4 border p-2 rounded" min="1" [(ngModel)]="d.cantidad"
                     [ngModelOptions]="{standalone: true}" required>
 
-                <!-- ELIMINAR -->
                 <button type="button" class="col-span-2 text-red-600" (click)="eliminarDetalle(i)">
                     ✕
                 </button>
@@ -59,8 +53,6 @@
         </div>
 
 
-
-        <!-- BOTONES -->
         <div class="flex justify-end space-x-2 mt-4">
             <button type="button" (click)="cerrarModal()" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
                 Cancelar
@@ -73,7 +65,6 @@
 
     </form>
 
-    <!-- LECTURA -->
     <div *ngIf="esSoloLectura">
         <p><strong>Cliente:</strong>
             {{ nuevo.clienteNombres }} {{ nuevo.clienteApellidos }}

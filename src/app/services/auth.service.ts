@@ -7,27 +7,18 @@ import { Observable } from 'rxjs';
 })
 export class AuthService {
 
-  private apiUrl = "https://localhost:7037/api/auth"; // Ajusta tu puerto
+  private apiUrl = "https://localhost:7037/api/auth";
 
   constructor(private http: HttpClient) {}
 
-  // ============================
-  //            LOGIN
-  // ============================
   login(email: string, password: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/login`, { email, password });
   }
 
-  // ============================
-  //          REGISTER
-  // ============================
   register(nombre: string, email: string, password: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/register`, { nombre, email, password });
   }
 
-  // ============================
-  //         TOKEN STORAGE
-  // ============================
   saveToken(token: string) {
     localStorage.setItem("auth_token", token);
   }
