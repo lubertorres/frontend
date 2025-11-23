@@ -3,35 +3,31 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ModalComponent } from '../../shared/components/modal/modal.component';
 import { DataTableComponent } from '../../shared/components/data-table/data-table.component';
-import { PedidosService } from '../../services/pedidos/pedidos.service';
+import { PedidosService, Pedido, PedidoDetalle } from '../../services/pedidos/pedidos.service';
 import { ProductosService } from '../../services/productos/productos.service';
 
 @Component({
   selector: 'app-pedidos',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    ModalComponent,
-    DataTableComponent
-  ],
+  imports: [CommonModule, FormsModule, ModalComponent, DataTableComponent],
   templateUrl: './pedidos.component.html',
-  styleUrl: './pedidos.component.css'
+  styleUrls: ['./pedidos.component.css']
 })
 export class PedidosComponent {
 
-  pedidos: any[] = [];
-  productos: any[] = [];   // <<< productos para dropdown
+  pedidos: Pedido[] = [];
+  productos: { productoID: string; nombre: string }[] = [];
   mostrarModal = false;
 
-  nuevo = {
-    clienteID: '',
-    detalles: [] as { productoID: number; cantidad: number }[]
+  // objeto usado para registrar o ver detalle
+  nuevo: Pedido = {
+    clienteIdentificacion: '',
+    detalles: []
   };
 
   columnas = [
     { key: 'pedidoID', label: 'ID Pedido' },
-    { key: 'clienteFK', label: 'Cliente' },
+    { key: 'clienteNombres', label: 'Cliente' },
     { key: 'fechaPedido', label: 'Fecha' },
     { key: 'total', label: 'Total' }
   ];
@@ -48,23 +44,30 @@ export class PedidosComponent {
 
   cargarPedidos() {
     this.pedidosService.obtenerPedidos().subscribe({
-      next: (resp) => this.pedidos = resp,
-      error: (err) => console.error(err)
+      next: (resp: Pedido[]) => this.pedidos = resp,
+      error: (err: any) => console.error(err)
     });
   }
 
   cargarProductos() {
     this.productosService.obtenerProductos().subscribe({
-      next: (resp) => this.productos = resp,
-      error: (err) => console.error(err)
+      next: (resp: any) => this.productos = resp.data,
+      error: (err: any) => console.error(err)
     });
   }
 
+  // Abrir modal para registrar pedido
   abrirModal() {
     this.nuevo = {
-      clienteID: '',
-      detalles: []   // Reinicia detalles
+      clienteIdentificacion: '',
+      detalles: []
     };
+    this.mostrarModal = true;
+  }
+
+  // Abrir modal para ver detalle de un pedido existente
+  verDetalle(pedido: Pedido) {
+    this.nuevo = { ...pedido };
     this.mostrarModal = true;
   }
 
@@ -74,9 +77,9 @@ export class PedidosComponent {
 
   agregarDetalle() {
     this.nuevo.detalles.push({
-      productoID: 0,
+      productoID: '',
       cantidad: 1
-    });
+    } as PedidoDetalle);
   }
 
   eliminarDetalle(index: number) {
@@ -85,8 +88,11 @@ export class PedidosComponent {
 
   registrarPedido() {
     const payload = {
-      ClienteID: Number(this.nuevo.clienteID),
-      DetallesJSON: JSON.stringify(this.nuevo.detalles)
+      identificacion: this.nuevo.clienteIdentificacion,
+      detalles: this.nuevo.detalles.map(d => ({
+        productoID: d.productoID,
+        cantidad: d.cantidad
+      }))
     };
 
     this.pedidosService.registrarPedido(payload).subscribe({
@@ -95,7 +101,16 @@ export class PedidosComponent {
         this.cerrarModal();
         this.cargarPedidos();
       },
-      error: (err) => alert('Error: ' + err.error?.error)
+      error: (err: any) => alert('Error: ' + err.error?.error)
     });
+  }
+
+  // placeholders para editar/eliminar si quieres implementarlos
+  editarPedido(pedido: Pedido) {
+    alert('Función editar no implementada aún');
+  }
+
+  eliminarPedido(id?: string) {
+    alert('Función eliminar no implementada aún');
   }
 }

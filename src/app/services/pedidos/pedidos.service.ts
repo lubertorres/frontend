@@ -1,21 +1,45 @@
+// src/app/services/pedidos/pedidos.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
+
+export interface PedidoDetalle {
+  detallePedidoID?: number;
+  productoID: string;
+  productoNombre?: string;
+  cantidad: number;
+  precioUnitario?: number;
+  subtotal?: number;
+}
+
+export interface Pedido {
+  pedidoID?: string;
+  clienteID?: string;
+  clienteIdentificacion: string;
+  clienteNombres?: string;
+  clienteApellidos?: string;
+  fechaPedido?: string;
+  estado?: string;
+  total?: string;
+  detalles: PedidoDetalle[];
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class PedidosService {
 
-  private api = 'http://localhost:8000/api/pedidos/completo';
+  private apiRegistrar = 'http://localhost:8000/api/pedidos';
+  private apiListar = 'http://localhost:8000/api/pedidos/completo';
 
   constructor(private http: HttpClient) {}
 
   registrarPedido(payload: any): Observable<any> {
-    return this.http.post(this.api, payload);
+    return this.http.post(this.apiRegistrar, payload);
   }
 
-  obtenerPedidos(): Observable<any[]> {
-    return this.http.get<any[]>('http://localhost:8000/api/pedidos');
+  obtenerPedidos(): Observable<Pedido[]> {
+    return this.http.get<{ ok: boolean; data: Pedido[] }>(this.apiListar)
+      .pipe(map(resp => resp.data));
   }
 }
