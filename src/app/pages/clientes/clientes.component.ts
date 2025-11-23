@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalComponent } from '../../shared/components/modal/modal.component';
-import { FormsModule } from '@angular/forms'; // para ngModel
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { ClientesService } from '../../services/clientes/clientes.service';
+import { DataTableComponent } from '../../shared/components/data-table/data-table.component';
 
 @Component({
   selector: 'app-clientes',
@@ -9,7 +11,8 @@ import { CommonModule } from '@angular/common';
   imports: [
     CommonModule,
     FormsModule,
-    ModalComponent
+    ModalComponent,
+    DataTableComponent
   ],
   templateUrl: './clientes.component.html',
   styleUrls: ['./clientes.component.css']
@@ -21,28 +24,69 @@ export class ClientesComponent implements OnInit {
   nuevo = {
     nombres: '',
     apellidos: '',
+    identificacion: '',
     email: '',
     telefono: '',
     direccion: ''
   };
 
-  clientes: any[] = [];
+  columns = [
+    { label: 'ID', key: 'clienteID' },
+    { label: 'Identificación', key: 'identificacion' },
+    { label: 'Nombres', key: 'nombres' },
+    { label: 'Apellidos', key: 'apellidos' },
+    { label: 'Email', key: 'email' },
+    { label: 'Teléfono', key: 'telefono' },
+    { label: 'Dirección', key: 'direccion' },
+    { label: 'Fecha Registro', key: 'fechaRegistro' },
+  ];
 
-  constructor() { }
+  data: any[] = [];
+  isLoading = false;
+
+  constructor(private clientesService: ClientesService) { }
 
   ngOnInit(): void {
     this.obtenerClientes();
   }
 
   obtenerClientes() {
-    // luego conectas con el servicio
-    this.clientes = [];
+    this.clientesService.obtenerClientes().subscribe({
+      next: (resp) => {
+        this.data = resp.data;
+        console.log('Clientes obtenidos:', this.data);
+      },
+      error: (err) => {
+        console.error('Error obteniendo clientes:', err);
+      }
+    });
   }
 
+
   registrarCliente() {
-    console.log('Nuevo cliente:', this.nuevo);
+    this.clientesService.crearCliente(this.nuevo).subscribe({
+      next: (resp) => {
+        console.log('Cliente creado:', resp);
+
+        this.nuevo = {
+          nombres: '',
+          apellidos: '',
+          identificacion: '',
+          email: '',
+          telefono: '',
+          direccion: ''
+        };
+        console.log('Cliente creado:', this.nuevo.toString());
+
+        this.cerrarModal();
+        this.obtenerClientes();
+      },
+      error: (err) => {
+        console.error('Error registrando cliente:', err);
+      }
+    });
   }
-  
+
   abrirModal() {
     this.mostrarModal = true;
   }
