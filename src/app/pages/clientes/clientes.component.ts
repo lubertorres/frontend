@@ -20,8 +20,10 @@ import { DataTableComponent } from '../../shared/components/data-table/data-tabl
 export class ClientesComponent implements OnInit {
 
   mostrarModal = false;
+  editando = false; // ⚡ Para saber si estamos editando
 
   nuevo = {
+    clienteID: 0,
     nombres: '',
     apellidos: '',
     identificacion: '',
@@ -39,6 +41,7 @@ export class ClientesComponent implements OnInit {
     { label: 'Teléfono', key: 'telefono' },
     { label: 'Dirección', key: 'direccion' },
     { label: 'Fecha Registro', key: 'fechaRegistro' },
+    { label: 'Estado', key: 'estado' },
   ];
 
   data: any[] = [];
@@ -51,48 +54,97 @@ export class ClientesComponent implements OnInit {
   }
 
   obtenerClientes() {
+    this.isLoading = true;
     this.clientesService.obtenerClientes().subscribe({
       next: (resp) => {
         this.data = resp.data;
-        console.log('Clientes obtenidos:', this.data);
+        this.isLoading = false;
       },
       error: (err) => {
         console.error('Error obteniendo clientes:', err);
+        this.isLoading = false;
       }
     });
   }
 
-
+  // ⚡ Registrar o actualizar según editando
   registrarCliente() {
+    if (this.editando) {
+      // Actualizar
+      this.clientesService.actualizarCliente(this.nuevo).subscribe({
+        next: (resp: any) => {
+          alert('Cliente actualizado correctamente');
+          this.cerrarModal();
+          this.obtenerClientes();
+        },
+        error: (err) => {
+          console.error(err);
+          alert('Error al actualizar el cliente');
+        }
+      });
+      return;
+    }
+
+    // Insertar
     this.clientesService.crearCliente(this.nuevo).subscribe({
       next: (resp) => {
-        console.log('Cliente creado:', resp);
-
-        this.nuevo = {
-          nombres: '',
-          apellidos: '',
-          identificacion: '',
-          email: '',
-          telefono: '',
-          direccion: ''
-        };
-        console.log('Cliente creado:', this.nuevo.toString());
-
+        alert('Cliente registrado correctamente');
         this.cerrarModal();
         this.obtenerClientes();
       },
       error: (err) => {
         console.error('Error registrando cliente:', err);
+        alert('Error al registrar cliente');
+      }
+    });
+  }
+
+  eliminarCliente(id: number) {
+    if (!confirm('¿Seguro que deseas eliminar este cliente?')) return;
+
+    this.clientesService.eliminarCliente(id).subscribe({
+      next: (resp: any) => {
+        alert(resp.mensaje);
+        this.obtenerClientes();
+      },
+      error: (err) => {
+        console.error(err);
+        alert('Error al eliminar el cliente');
       }
     });
   }
 
   abrirModal() {
+    this.editando = false;
+    this.nuevo = {
+      clienteID: 0,
+      nombres: '',
+      apellidos: '',
+      identificacion: '',
+      email: '',
+      telefono: '',
+      direccion: ''
+    };
+    this.mostrarModal = true;
+  }
+
+  abrirEdicion(cliente: any) {
+    this.editando = true;
+    this.nuevo = { ...cliente };
     this.mostrarModal = true;
   }
 
   cerrarModal() {
     this.mostrarModal = false;
+    this.editando = false;
+    this.nuevo = {
+      clienteID: 0,
+      nombres: '',
+      apellidos: '',
+      identificacion: '',
+      email: '',
+      telefono: '',
+      direccion: ''
+    };
   }
-
 }

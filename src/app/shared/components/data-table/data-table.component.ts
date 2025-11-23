@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'data-table',
@@ -13,4 +13,16 @@ export class DataTableComponent {
   @Input() data: any[] = [];
 
   @Input() isLoading: boolean = false;
+  @Output() onDelete = new EventEmitter<number>();
+  @Output() onEdit = new EventEmitter<any>();
+
+  eliminar(id: number) {
+    this.onDelete.emit(id);
+    console.log('Eliminar ID:', id);
+  }
+
+  editar(row: any) {
+    this.onEdit.emit(row);
+  }
+
 }

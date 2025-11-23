@@ -5,10 +5,12 @@
 <data-table 
   [columns]="columns" 
   [data]="data" 
-  [isLoading]="isLoading">
+  [isLoading]="isLoading"
+  (onDelete)="eliminarCliente($event)"
+  (onEdit)="abrirEdicion($event)">
 </data-table>
 
-<app-modal [visible]="mostrarModal" title="Registrar Cliente" width="500px" (close)="cerrarModal()">
+<app-modal [visible]="mostrarModal" title="Cliente" width="500px" (close)="cerrarModal()">
 
     <form class="space-y-4" (ngSubmit)="registrarCliente()">
 

@@ -23,5 +23,15 @@ export class ClientesService {
   crearCliente(payload: any) {
     return this.http.post(this.apiUrl, payload);
   }
+
+  eliminarCliente(id: number) {
+    console.log('Eliminar ID desde el servicio:', id);
+    return this.http.delete(`${this.apiUrl}/${id}`);
+  }
+
+  actualizarCliente(payload: any) {
+    return this.http.put(`${this.apiUrl}/${payload.clienteID}`, payload);
+  }
+
 }
 
