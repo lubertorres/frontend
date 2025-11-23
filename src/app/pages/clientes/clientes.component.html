@@ -1,0 +1,45 @@
+<button
+  class="px-4 py-2 bg-blue-600 text-white rounded"
+  (click)="abrirModal()">
+  + Nuevo Cliente
+</button>
+
+<app-modal
+  [visible]="mostrarModal"
+  title="Registrar Cliente"
+  width="500px"
+  (close)="cerrarModal()"
+>
+
+  <form class="space-y-4" (ngSubmit)="registrarCliente()">
+
+    <input type="text" placeholder="Nombres"
+           class="w-full border p-2 rounded" [(ngModel)]="nuevo.nombres" name="nombres">
+
+    <input type="text" placeholder="Apellidos"
+           class="w-full border p-2 rounded" [(ngModel)]="nuevo.apellidos" name="apellidos">
+
+    <input type="email" placeholder="Email"
+           class="w-full border p-2 rounded" [(ngModel)]="nuevo.email" name="email">
+
+    <input type="text" placeholder="Teléfono"
+           class="w-full border p-2 rounded" [(ngModel)]="nuevo.telefono" name="telefono">
+
+    <input type="text" placeholder="Direccion"
+           class="w-full border p-2 rounded" [(ngModel)]="nuevo.direccion" name="direccion">
+
+    <div class="flex justify-end gap-2">
+      <button type="button" (click)="cerrarModal()"
+              class="px-3 py-2 bg-gray-300 rounded">
+        Cancelar
+      </button>
+
+      <button type="submit"
+              class="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+        Guardar
+      </button>
+    </div>
+
+  </form>
+
+</app-modal>

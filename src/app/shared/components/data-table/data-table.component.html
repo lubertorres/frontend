@@ -1,0 +1,29 @@
+<div class="bg-white shadow rounded overflow-hidden">
+
+  <table class="w-full">
+    
+    <thead class="bg-gray-200">
+      <tr>
+        <th *ngFor="let col of columns" class="p-3 text-left font-semibold">
+          {{ col.label }}
+        </th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngIf="isLoading">
+        <td [attr.colspan]="columns.length" class="p-4 text-center">
+          Cargando...
+        </td>
+      </tr>
+
+      <tr *ngFor="let row of data" class="border-b hover:bg-gray-50">
+        <td *ngFor="let col of columns" class="p-3">
+          {{ row[col.key] }}
+        </td>
+      </tr>
+    </tbody>
+
+  </table>
+
+</div>

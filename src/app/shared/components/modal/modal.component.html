@@ -1,0 +1,16 @@
+<div
+  *ngIf="visible"
+  class="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+
+  <div class="bg-white rounded shadow p-6" [style.width]="width">
+
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-bold">{{ title }}</h2>
+
+      <button (click)="cerrar()" class="text-gray-600 hover:text-black">✖</button>
+    </div>
+
+    <ng-content></ng-content>
+
+  </div>
+</div>
