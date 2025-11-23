@@ -48,7 +48,12 @@ export class PedidosService {
   }
 
   editarPedido(id: string | number, payload: any): Observable<any> {
-  return this.http.put(`http://localhost:8000/api/pedidos/${id}`, payload);
-}
+    return this.http.put(`http://localhost:8000/api/pedidos/${id}`, payload);
+  }
 
+  cambiarEstado(pedidoID: number, estado: string) {
+    return this.http.put(`http://localhost:8000/api/pedidos/estado/${pedidoID}`, {
+      estado
+    });
+  }
 }

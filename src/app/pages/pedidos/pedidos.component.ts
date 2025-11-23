@@ -27,7 +27,8 @@ export class PedidosComponent {
     { key: 'pedidoID', label: 'ID Pedido' },
     { key: 'clienteNombres', label: 'Cliente' },
     { key: 'fechaPedido', label: 'Fecha' },
-    { key: 'total', label: 'Total' }
+    { key: 'total', label: 'Total' },
+    { key: 'estado', label: 'Estado' }
   ];
 
   constructor(
@@ -186,5 +187,31 @@ export class PedidosComponent {
       error: err => alert('Error actualizando: ' + err.error?.error)
     });
   }
+  mostrarModalEstado = false;
+  pedidoSeleccionado: any = null;
+  estadoSeleccionado = 'PENDIENTE';
 
+  abrirModalEstado(pedido: any) {
+    console.log("EVENTO RECIBIDO EN PEDIDOS:", pedido);
+    this.pedidoSeleccionado = pedido;
+    this.estadoSeleccionado = pedido.estado;
+    this.mostrarModalEstado = true;
+  }
+
+  guardarEstado() {
+    this.pedidosService.cambiarEstado(
+      this.pedidoSeleccionado.pedidoID,
+      this.estadoSeleccionado
+    ).subscribe({
+      next: () => {
+        alert('Estado actualizado correctamente');
+        this.mostrarModalEstado = false;
+        this.cargarPedidos();
+      },
+      error: (err) => {
+        console.error('Error al cambiar estado:', err);
+        alert('Hubo un error al actualizar el estado');
+      }
+    });
+  }
 }

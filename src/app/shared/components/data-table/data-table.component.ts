@@ -15,8 +15,15 @@ export class DataTableComponent {
   @Input() isLoading: boolean = false;
   @Output() onDelete = new EventEmitter<any>();
   @Output() onEdit = new EventEmitter<any>();
+  @Input() showEstadoButton: boolean = false;
+  @Output() onEstado = new EventEmitter<any>();
 
   editar(row: any) { this.onEdit.emit(row); }
   eliminar(row: any) { this.onDelete.emit(row); }
+  cambiarEstado(row: any) {
+    this.onEstado.emit(row);
+    console.log("ESTADO CLICK EN DATATABLE:", row)
+
+  }
 
 }

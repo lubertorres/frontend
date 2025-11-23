@@ -6,7 +6,8 @@
     </button>
 </div>
 
-<data-table [data]="pedidos" [columns]="columnas" (onEdit)="editarPedido($event)" (onDelete)="eliminarPedido($event)">
+<data-table [data]="pedidos" [columns]="columnas" [showEstadoButton]="true" (onEdit)="editarPedido($event)"
+    (onDelete)="eliminarPedido($event)" (onEstado)="abrirModalEstado($event)">
 </data-table>
 
 <app-modal [visible]="mostrarModal" title="Pedido" (close)="cerrarModal()">
@@ -90,4 +91,29 @@
         </table>
     </div>
 
+</app-modal>
+
+<app-modal [visible]="mostrarModalEstado" title="Cambiar Estado" width="400px" (close)="mostrarModalEstado = false">
+
+    <div class="space-y-4">
+
+        <p class="font-medium">
+            Pedido #{{ pedidoSeleccionado?.pedidoID }}
+        </p>
+
+        <label class="block text-sm font-semibold">Nuevo Estado</label>
+
+        <select [(ngModel)]="estadoSeleccionado" class="w-full border p-2 rounded">
+            <option value="PENDIENTE">Pendiente</option>
+            <option value="COMPLETADO">Completado</option>
+            <option value="CANCELADO">Cancelado</option>
+        </select>
+
+        <div class="flex justify-end mt-3">
+            <button class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" (click)="guardarEstado()">
+                Guardar
+            </button>
+        </div>
+
+    </div>
 </app-modal>
