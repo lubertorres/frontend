@@ -4,6 +4,12 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component';
 
 export const routes: Routes = [
   {
+    path: 'register',
+    loadComponent: () =>
+      import('./auth/pages/register/register.component').then(c => c.RegisterComponent)
+  },
+
+  {
     path: 'login',
     loadComponent: () =>
       import('./auth/pages/login/login.component').then(c => c.LoginComponent)
