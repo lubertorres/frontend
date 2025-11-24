@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Chart, registerables } from 'chart.js';
-import { PedidosService } from '../../services/pedidos/pedidos.service';
+import { DashboardService } from '../../services/dashboard/dashboard.service';
 
 Chart.register(...registerables);
 
@@ -16,24 +16,38 @@ export class DashboardComponent implements OnInit {
   stats = {
     totalPedidos: 0,
     completados: 0,
-    pendientes: 0
+    pendientes: 0,
+    clientesActivos: 0
   };
 
-  constructor(private pedidosService: PedidosService) {}
+  actividadLabels: string[] = [];
+  actividadValues: number[] = [];
+
+  constructor(private dashService: DashboardService) {}
 
   ngOnInit(): void {
-    this.obtenerEstadisticas();
+    this.cargarDashboard();
   }
 
-  obtenerEstadisticas() {
-    this.pedidosService.obtenerPedidos().subscribe((pedidos: any) => {
+  cargarDashboard() {
+    this.dashService.obtenerEstadisticas().subscribe(resp => {
+      console.log('DASHBOARD API:', resp);
 
-      this.stats.totalPedidos = pedidos.length;
-      this.stats.completados = pedidos.filter((p: any) => p.estado === 'COMPLETADO').length;
-      this.stats.pendientes = pedidos.filter((p: any) => p.estado === 'PENDIENTE').length;
+      this.stats.totalPedidos = resp.totales;
+
+      this.stats.completados =
+        resp.estados.find((x: any) => x.estado === 'COMPLETADO')?.cantidad || 0;
+
+      this.stats.pendientes =
+        resp.estados.find((x: any) => x.estado === 'PENDIENTE')?.cantidad || 0;
+
+      this.stats.clientesActivos = resp.clientes[0]?.clientesActivos || 0;
+
+      this.actividadLabels = resp.actividad.map((a: any) => a.fecha);
+      this.actividadValues = resp.actividad.map((a: any) => a.total);
 
       this.graficarEstados();
-      this.graficarDias(pedidos);
+      this.graficarDias();
     });
   }
 
@@ -50,21 +64,14 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  graficarDias(pedidos: any[]) {
-    const agrupados: any = {};
-
-    pedidos.forEach(p => {
-      const fecha = p.fechaPedido.split('T')[0];
-      agrupados[fecha] = (agrupados[fecha] || 0) + 1;
-    });
-
+  graficarDias() {
     new Chart("chartDias", {
       type: 'line',
       data: {
-        labels: Object.keys(agrupados),
+        labels: this.actividadLabels,
         datasets: [{
           label: "Pedidos por día",
-          data: Object.values(agrupados),
+          data: this.actividadValues,
           borderColor: "#3b82f6",
           fill: false
         }]
